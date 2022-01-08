@@ -1,29 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "worlddownloader",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "WorldDownloader",
+  "description": "Clones a Minecraft multiplayer world from a remote server to your singleplayer folder",
   "authors": [
-    "Me!"
+    "historian",
+    "ChadGamer82342",
+    "nairol"
   ],
   "contact": {
-    "homepage": "https://glass-launcher.net/",
-    "sources": "https://github.com/calmilamsy/BIN-fabric-example-mod"
+    "homepage": "https://2beta2t.net/",
+    "sources": "https://github.com/FluorideHistorian/WorldDownloader-Fabric"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MPL-2.0",
+  "icon": "assets/worlddownloader/icon.png",
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "net.glasslauncher.example.ExampleMod"
+    "client": [
+      "me.historian.worlddownloader.WorldDownloader"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "worlddownloader.mixins.json"
   ],
 
   "depends": {
