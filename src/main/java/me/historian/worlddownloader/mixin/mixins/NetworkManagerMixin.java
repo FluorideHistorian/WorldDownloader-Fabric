@@ -34,8 +34,8 @@ public class NetworkManagerMixin {
 				if(packet0.direction != 255) {
 					final Block block = Block.blocksList[WorldDownloader.mc.theWorld.getBlockId(packet0.xPosition, packet0.yPosition, packet0.zPosition)];
 					if(block instanceof BlockContainer) {
-						final TileEntity tileEntity = ((WorldClientMixinAccessor)((NetClientHandlerAccessor)WorldDownloader.mc.method_2145()).getWorldClient())
-								.getBlockTileEntity(packet0.xPosition, packet0.yPosition, packet0.zPosition);
+						final TileEntity tileEntity = ((WorldClientMixinAccessor)((NetClientHandlerAccessor)WorldDownloader.mc.method_2145()).getWorldClient()).getBlockTileEntity(packet0.xPosition, packet0.yPosition,
+						packet0.zPosition);
 						if(tileEntity instanceof IInventory) {
 							WorldDownloader.setCurrentTileEntity(tileEntity);
 							WorldDownloader.setOpenContainerPacket(packet0);

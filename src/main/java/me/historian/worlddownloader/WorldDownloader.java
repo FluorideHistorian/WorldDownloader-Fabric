@@ -59,7 +59,7 @@ public class WorldDownloader implements ClientModInitializer {
 		return openContainerPacket;
 	}
 
-	public static void setOpenContainerPacket(Packet15Place placePacket) {
+	public static void setOpenContainerPacket(final Packet15Place placePacket) {
 		WorldDownloader.openContainerPacket = placePacket;
 	}
 
@@ -67,7 +67,7 @@ public class WorldDownloader implements ClientModInitializer {
 		return currentTileEntity;
 	}
 
-	public static void setCurrentTileEntity(TileEntity currentTileEntity) {
+	public static void setCurrentTileEntity(final TileEntity currentTileEntity) {
 		WorldDownloader.currentTileEntity = currentTileEntity;
 	}
 }
