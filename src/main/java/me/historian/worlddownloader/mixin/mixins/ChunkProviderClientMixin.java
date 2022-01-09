@@ -93,11 +93,6 @@ public class ChunkProviderClientMixin implements ChunkProviderClientMixinAccesso
 		}
 	}
 	
-	@Unique
-	private Chunk loadChunk(final int x, final int z) throws IOException {
-		return WorldDownloader.getChunkLoader().method_811(worldObj, x, z);
-	}
-	
 	@Override
 	public void importOldTileEntities() {
 		for(final Chunk chunk : chunkMapping.values()) {

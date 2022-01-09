@@ -14,9 +14,11 @@ import me.historian.worlddownloader.mixin.ChunkMixinAccessor;
 import me.historian.worlddownloader.mixin.WorldClientMixinAccessor;
 import net.minecraft.src.Block;
 import net.minecraft.src.Chunk;
+import net.minecraft.src.IInventory;
 import net.minecraft.src.IProgressUpdate;
 import net.minecraft.src.ISaveHandler;
 import net.minecraft.src.TileEntity;
+import net.minecraft.src.TileEntityChest;
 import net.minecraft.src.TileEntityNote;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldClient;
@@ -62,5 +64,33 @@ public class WorldClientMixin extends World implements WorldClientMixinAccessor 
 	public void setNewBlockTileEntity(final int x, final int y, final int z, final TileEntity tileEntity) {
 		final Chunk chunk = method_214(x >> 4, z >> 4);
 		if(chunk != null) ((ChunkMixinAccessor)chunk).setNewChunkBlockTileEntity(x & 15, y, z & 15, tileEntity);
+	}
+	
+	@Override
+	public void setNewChestTileEntitiy(final int x, final int y, final int z, final IInventory iInventory) {
+		TileEntityChest tileEntityChest = new TileEntityChest();
+		for(int i = 0; i < 27; i++) tileEntityChest.setInventorySlotContents(i, iInventory.method_954(i));
+		if(iInventory.getSizeInventory() == 27) {
+			setNewBlockTileEntity(x, y, z, tileEntityChest);
+			return;
+		}
+		TileEntityChest tileEntityChest0 = new TileEntityChest();
+		for(int i = 0; i < 27; i++) tileEntityChest0.setInventorySlotContents(i, iInventory.method_954(27 + i));
+		if(getBlockId(x - 1, y, z) == Block.chest.blockID) {
+			setNewBlockTileEntity(x - 1, y, z, tileEntityChest);
+			setNewBlockTileEntity(x, y, z, tileEntityChest0);
+		}
+		if(getBlockId(x + 1, y, z) == Block.chest.blockID) {
+			setNewBlockTileEntity(x, y, z, tileEntityChest);
+			setNewBlockTileEntity(x + 1, y, z, tileEntityChest0);
+		}
+		if(getBlockId(x, y, z - 1) == Block.chest.blockID) {
+			setNewBlockTileEntity(x, y, z - 1, tileEntityChest);
+			setNewBlockTileEntity(x, y, z, tileEntityChest0);
+		}
+		if(getBlockId(x, y, z + 1) == Block.chest.blockID) {
+			setNewBlockTileEntity(x, y, z, tileEntityChest);
+			setNewBlockTileEntity(x, y, z + 1, tileEntityChest0);
+		}
 	}
 }

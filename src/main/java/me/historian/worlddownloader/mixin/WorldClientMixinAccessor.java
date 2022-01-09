@@ -5,6 +5,7 @@
  */
 package me.historian.worlddownloader.mixin;
 
+import net.minecraft.src.IInventory;
 import net.minecraft.src.TileEntity;
 
 /**
@@ -13,4 +14,6 @@ import net.minecraft.src.TileEntity;
  */
 public interface WorldClientMixinAccessor {
 	void setNewBlockTileEntity(final int x, final int y, final int z, final TileEntity tileEntity);
+	
+	void setNewChestTileEntitiy(final int x, final int y, final int z, final IInventory iInventory);
 }

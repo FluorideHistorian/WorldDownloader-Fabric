@@ -10,7 +10,6 @@ import net.fabricmc.loader.FabricLoaderImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.IChunkLoader;
 import net.minecraft.src.ISaveHandler;
-import net.minecraft.src.Packet15Place;
 
 /**
  * @author historian
@@ -21,7 +20,6 @@ public class WorldDownloader implements ClientModInitializer {
 	private static boolean downloadingWorld;
 	private static IChunkLoader chunkLoader;
 	private static ISaveHandler saveHandler;
-	private static Packet15Place openContainerPacket;
 	
 	@Override
 	public void onInitializeClient() {
@@ -51,13 +49,5 @@ public class WorldDownloader implements ClientModInitializer {
 	
 	public static void setSaveHandler(final ISaveHandler saveHandler) {
 		WorldDownloader.saveHandler = saveHandler;
-	}
-	
-	public static Packet15Place getOpenContainerPacket() {
-		return openContainerPacket;
-	}
-	
-	public static void setOpenContainerPacket(final Packet15Place openContainerPacket) {
-		WorldDownloader.openContainerPacket = openContainerPacket;
 	}
 }
