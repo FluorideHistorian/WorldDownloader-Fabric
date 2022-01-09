@@ -10,6 +10,8 @@ import net.fabricmc.loader.FabricLoaderImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.IChunkLoader;
 import net.minecraft.src.ISaveHandler;
+import net.minecraft.src.Packet15Place;
+import net.minecraft.src.TileEntity;
 
 /**
  * @author historian
@@ -18,6 +20,8 @@ import net.minecraft.src.ISaveHandler;
 public class WorldDownloader implements ClientModInitializer {
 	public static final Minecraft mc = (Minecraft)FabricLoaderImpl.getInstance().getGameInstance();
 	private static boolean downloadingWorld;
+	private static Packet15Place openContainerPacket;
+	private static TileEntity currentTileEntity;
 	private static IChunkLoader chunkLoader;
 	private static ISaveHandler saveHandler;
 	
@@ -49,5 +53,21 @@ public class WorldDownloader implements ClientModInitializer {
 	
 	public static void setSaveHandler(final ISaveHandler saveHandler) {
 		WorldDownloader.saveHandler = saveHandler;
+	}
+
+	public static Packet15Place getOpenContainerPacket() {
+		return openContainerPacket;
+	}
+
+	public static void setOpenContainerPacket(Packet15Place placePacket) {
+		WorldDownloader.openContainerPacket = placePacket;
+	}
+
+	public static TileEntity getCurrentTileEntity() {
+		return currentTileEntity;
+	}
+
+	public static void setCurrentTileEntity(TileEntity currentTileEntity) {
+		WorldDownloader.currentTileEntity = currentTileEntity;
 	}
 }

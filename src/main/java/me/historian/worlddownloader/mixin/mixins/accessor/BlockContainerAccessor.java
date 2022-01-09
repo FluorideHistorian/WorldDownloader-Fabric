@@ -16,6 +16,6 @@ import net.minecraft.src.TileEntity;
  */
 @Mixin(BlockContainer.class)
 public interface BlockContainerAccessor {
-	@Invoker
+	@Invoker("method_1251")
 	TileEntity callMethod_1251();
 }

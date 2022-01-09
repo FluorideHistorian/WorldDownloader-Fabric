@@ -5,6 +5,9 @@
  */
 package me.historian.worlddownloader.mixin.mixins;
 
+import me.historian.worlddownloader.mixin.mixins.accessor.NetClientHandlerAccessor;
+import net.minecraft.src.*;
+import org.lwjgl.Sys;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,17 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import me.historian.worlddownloader.WorldDownloader;
 import me.historian.worlddownloader.mixin.ChunkMixinAccessor;
 import me.historian.worlddownloader.mixin.WorldClientMixinAccessor;
-import net.minecraft.src.Block;
-import net.minecraft.src.Chunk;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.IProgressUpdate;
-import net.minecraft.src.ISaveHandler;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.TileEntityChest;
-import net.minecraft.src.TileEntityNote;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldClient;
-import net.minecraft.src.WorldProvider;
 
 /**
  * @author historian
@@ -59,15 +51,28 @@ public class WorldClientMixin extends World implements WorldClientMixinAccessor 
 			setNewBlockTileEntity(x, y, z, tileEntityNote);
 		}
 	}
-	
+
+	@Override
+	public TileEntity getBlockTileEntity(final int x, final int y, final int z) {
+		for(Object object : loadedTileEntityList) {
+			if(object instanceof TileEntity) {
+				TileEntity tileEntity1 = (TileEntity) object;
+				if(tileEntity1.xCoord == x && tileEntity1.yCoord == y && tileEntity1.zCoord == z) {
+					return tileEntity1;
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void setNewBlockTileEntity(final int x, final int y, final int z, final TileEntity tileEntity) {
 		final Chunk chunk = method_214(x >> 4, z >> 4);
 		if(chunk != null) ((ChunkMixinAccessor)chunk).setNewChunkBlockTileEntity(x & 15, y, z & 15, tileEntity);
 	}
-	
+
 	@Override
-	public void setNewChestTileEntitiy(final int x, final int y, final int z, final IInventory iInventory) {
+	public void setNewChestTileEntity(final int x, final int y, final int z, final IInventory iInventory) {
 		TileEntityChest tileEntityChest = new TileEntityChest();
 		for(int i = 0; i < 27; i++) tileEntityChest.setInventorySlotContents(i, iInventory.method_954(i));
 		if(iInventory.getSizeInventory() == 27) {
