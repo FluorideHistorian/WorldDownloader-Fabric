@@ -5,13 +5,14 @@
  */
 package me.historian.worlddownloader;
 
+import me.historian.worlddownloader.mixin.WorldClientMixinAccessor;
+import me.historian.worlddownloader.mixin.mixins.accessor.NetClientHandlerAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.FabricLoaderImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.IChunkLoader;
 import net.minecraft.src.ISaveHandler;
 import net.minecraft.src.Packet15Place;
-import net.minecraft.src.TileEntity;
 
 /**
  * @author historian
@@ -21,7 +22,6 @@ public class WorldDownloader implements ClientModInitializer {
 	public static final Minecraft mc = (Minecraft)FabricLoaderImpl.getInstance().getGameInstance();
 	private static boolean downloadingWorld;
 	private static Packet15Place openContainerPacket;
-	private static TileEntity currentTileEntity;
 	private static IChunkLoader chunkLoader;
 	private static ISaveHandler saveHandler;
 	
@@ -63,11 +63,7 @@ public class WorldDownloader implements ClientModInitializer {
 		WorldDownloader.openContainerPacket = placePacket;
 	}
 
-	public static TileEntity getCurrentTileEntity() {
-		return currentTileEntity;
-	}
-
-	public static void setCurrentTileEntity(final TileEntity currentTileEntity) {
-		WorldDownloader.currentTileEntity = currentTileEntity;
+	public static WorldClientMixinAccessor getWorldClientMixinAccessor() {
+		return ((WorldClientMixinAccessor)((NetClientHandlerAccessor)mc.method_2145()).getWorldClient());
 	}
 }

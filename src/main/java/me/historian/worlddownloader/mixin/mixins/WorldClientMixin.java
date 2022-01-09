@@ -5,6 +5,7 @@
  */
 package me.historian.worlddownloader.mixin.mixins;
 
+import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,17 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import me.historian.worlddownloader.WorldDownloader;
 import me.historian.worlddownloader.mixin.ChunkMixinAccessor;
 import me.historian.worlddownloader.mixin.WorldClientMixinAccessor;
-import net.minecraft.src.Block;
-import net.minecraft.src.Chunk;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.IProgressUpdate;
-import net.minecraft.src.ISaveHandler;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.TileEntityChest;
-import net.minecraft.src.TileEntityNote;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldClient;
-import net.minecraft.src.WorldProvider;
 
 /**
  * @author historian
@@ -33,12 +23,12 @@ public class WorldClientMixin extends World implements WorldClientMixinAccessor 
 	private WorldClientMixin(final ISaveHandler iSaveHandler, final String levelName, final WorldProvider worldProvider, final long randomSeed) {
 		super(iSaveHandler, levelName, worldProvider, randomSeed);
 	}
-	
+
 	@Inject(method = "setSpawnLocation", at = @At("HEAD"), cancellable = true)
 	private void setSpawnLocation(final CallbackInfo callbackInfo) {
 		callbackInfo.cancel();
 	}
-	
+
 	@Override
 	public void saveWorld(final boolean flag, final IProgressUpdate loadingScreen) {
 		if(WorldDownloader.isDownloadingWorld()) {
@@ -47,7 +37,7 @@ public class WorldClientMixin extends World implements WorldClientMixinAccessor 
 		}
 		super.saveWorld(flag, loadingScreen);
 	}
-	
+
 	@Override
 	public void playNoteAt(final int x, final int y, final int z, final int instrument, final int note) {
 		super.playNoteAt(x, y, z, instrument, note);
@@ -59,7 +49,7 @@ public class WorldClientMixin extends World implements WorldClientMixinAccessor 
 			setNewBlockTileEntity(x, y, z, tileEntityNote);
 		}
 	}
-	
+
 	@Override
 	public TileEntity getBlockTileEntity(final int x, final int y, final int z) {
 		for(Object object : loadedTileEntityList) {
@@ -72,38 +62,41 @@ public class WorldClientMixin extends World implements WorldClientMixinAccessor 
 		}
 		return null;
 	}
-	
+
 	@Override
 	public void setNewBlockTileEntity(final int x, final int y, final int z, final TileEntity tileEntity) {
 		final Chunk chunk = method_214(x >> 4, z >> 4);
 		if(chunk != null) ((ChunkMixinAccessor)chunk).setNewChunkBlockTileEntity(x & 15, y, z & 15, tileEntity);
 	}
-	
+
 	@Override
-	public void setNewChestTileEntity(final int x, final int y, final int z, final IInventory iInventory) {
-		TileEntityChest tileEntityChest = new TileEntityChest();
-		for(int i = 0; i < 27; i++) tileEntityChest.setInventorySlotContents(i, iInventory.method_954(i));
-		if(iInventory.getSizeInventory() == 27) {
-			setNewBlockTileEntity(x, y, z, tileEntityChest);
-			return;
+	public IInventory createNewChestInventory(final int i, final int y, final int z, final int size) {
+		TileEntity te = new TileEntityChest();
+		setNewBlockTileEntity(i, y, z, te);
+		IInventory inventory = (IInventory) te;
+		if(size <= 27)
+			return inventory;
+		te = new TileEntityChest();
+		if(getBlockId(i - 1, y, z) == 54)
+		{
+			setNewBlockTileEntity(i - 1, y, z, te);
+			inventory = new InventoryLargeChest("Large chest", (IInventory) te, inventory);
 		}
-		TileEntityChest tileEntityChest0 = new TileEntityChest();
-		for(int i = 0; i < 27; i++) tileEntityChest0.setInventorySlotContents(i, iInventory.method_954(27 + i));
-		if(getBlockId(x - 1, y, z) == Block.chest.blockID) {
-			setNewBlockTileEntity(x - 1, y, z, tileEntityChest);
-			setNewBlockTileEntity(x, y, z, tileEntityChest0);
+		if(getBlockId(i + 1, y, z) == 54)
+		{
+			setNewBlockTileEntity(i + 1, y, z, te);
+			inventory = new InventoryLargeChest("Large chest", inventory, (IInventory) te);
 		}
-		if(getBlockId(x + 1, y, z) == Block.chest.blockID) {
-			setNewBlockTileEntity(x, y, z, tileEntityChest);
-			setNewBlockTileEntity(x + 1, y, z, tileEntityChest0);
+		if(getBlockId(i, y, z - 1) == 54)
+		{
+			setNewBlockTileEntity(i, y, z - 1, te);
+			inventory = new InventoryLargeChest("Large chest", (IInventory) te, inventory);
 		}
-		if(getBlockId(x, y, z - 1) == Block.chest.blockID) {
-			setNewBlockTileEntity(x, y, z - 1, tileEntityChest);
-			setNewBlockTileEntity(x, y, z, tileEntityChest0);
+		if(getBlockId(i, y, z + 1) == 54)
+		{
+			setNewBlockTileEntity(i, y, z + 1, te);
+			inventory = new InventoryLargeChest("Large chest", inventory, (IInventory) te);
 		}
-		if(getBlockId(x, y, z + 1) == Block.chest.blockID) {
-			setNewBlockTileEntity(x, y, z, tileEntityChest);
-			setNewBlockTileEntity(x, y, z + 1, tileEntityChest0);
-		}
+		return inventory;
 	}
 }
