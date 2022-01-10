@@ -19,6 +19,7 @@ import net.minecraft.src.WorldInfo;
 public interface WorldAccessor {
 	@Accessor
 	IChunkProvider getChunkProvider();
+	
 	@Accessor
 	WorldInfo getWorldInfo();
 }

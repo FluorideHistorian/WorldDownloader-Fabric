@@ -21,7 +21,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "me.historian.worlddownloader.WorldDownloader"
+      "me.historian.worlddownloader.WorldDL"
     ]
   },
   "mixins": [

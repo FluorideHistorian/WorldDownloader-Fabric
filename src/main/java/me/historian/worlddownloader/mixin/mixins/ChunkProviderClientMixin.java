@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import me.historian.worlddownloader.WorldDownloader;
+import me.historian.worlddownloader.WorldDL;
 import me.historian.worlddownloader.mixin.ChunkMixinAccessor;
 import me.historian.worlddownloader.mixin.ChunkProviderClientMixinAccessor;
 import net.minecraft.src.Chunk;
@@ -41,10 +41,10 @@ public class ChunkProviderClientMixin implements ChunkProviderClientMixinAccesso
 	
 	@Inject(method = "method_1954", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;"), locals = LocalCapture.CAPTURE_FAILHARD)
 	private void method_1954(final int x, final int z, final CallbackInfo callbackInfo, final Chunk chunk) {
-		if(WorldDownloader.isDownloadingWorld() && !chunk.neverSave && ((ChunkMixinAccessor)chunk).isFilled()) {
+		if(WorldDL.isDownloadingWorld() && !chunk.neverSave && ((ChunkMixinAccessor)chunk).isFilled()) {
 			try {
 				saveChunk(chunk);
-				WorldDownloader.getChunkLoader().method_814(worldObj, chunk);
+				WorldDL.getChunkLoader().method_814(worldObj, chunk);
 			} catch(final IOException e) {
 				e.printStackTrace();
 			}
@@ -53,7 +53,7 @@ public class ChunkProviderClientMixin implements ChunkProviderClientMixinAccesso
 	
 	@Inject(method = "method_1807", at = @At("TAIL"))
 	private void method_1807(final int x, final int z, final CallbackInfoReturnable<Chunk> callbackInfoReturnable) {
-		if(WorldDownloader.isDownloadingWorld()) {
+		if(WorldDL.isDownloadingWorld()) {
 			try {
 				((ChunkMixinAccessor)callbackInfoReturnable.getReturnValue()).importOldChunkTileEntities();
 			} catch(final IOException e) {
@@ -64,15 +64,15 @@ public class ChunkProviderClientMixin implements ChunkProviderClientMixinAccesso
 	
 	@Inject(method = "saveChunks", at = @At("TAIL"))
 	private void saveChunks(final boolean flag, final IProgressUpdate loadingScreen, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-		if(WorldDownloader.isDownloadingWorld()) {
+		if(WorldDL.isDownloadingWorld()) {
 			try {
 				for(final Chunk chunk : chunkMapping.values()) {
 					if(chunk != null && !chunk.neverSave && ((ChunkMixinAccessor)chunk).isFilled()) {
-						if(flag) WorldDownloader.getChunkLoader().method_814(worldObj, chunk);
+						if(flag) WorldDL.getChunkLoader().method_814(worldObj, chunk);
 						saveChunk(chunk);
 					}
 				}
-				if(flag) WorldDownloader.getChunkLoader().saveExtraData();
+				if(flag) WorldDL.getChunkLoader().saveExtraData();
 			} catch(final IOException e) {
 				e.printStackTrace();
 			}
@@ -82,14 +82,14 @@ public class ChunkProviderClientMixin implements ChunkProviderClientMixinAccesso
 	@SuppressWarnings("unchecked")
 	@Unique
 	private void saveChunk(final Chunk chunk) throws IOException {
-		if(WorldDownloader.isDownloadingWorld()) {
+		if(WorldDL.isDownloadingWorld()) {
 			chunk.lastSaveTime = worldObj.getWorldTime();
 			chunk.isTerrainPopulated = true;
 			for(Map.Entry<ChunkPosition, TileEntity> entry : ((ChunkMixinAccessor)chunk).getNewChunkTileEntityMap().entrySet()) {
 				final TileEntity tileEntity = entry.getValue();
 				if(tileEntity instanceof IInventory || tileEntity instanceof TileEntityNote) chunk.chunkTileEntityMap.put(entry.getKey(), tileEntity);
 			}
-			WorldDownloader.getChunkLoader().method_812(worldObj, chunk);
+			WorldDL.getChunkLoader().method_812(worldObj, chunk);
 		}
 	}
 	

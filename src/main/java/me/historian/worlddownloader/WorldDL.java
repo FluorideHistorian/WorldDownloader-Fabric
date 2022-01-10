@@ -18,7 +18,7 @@ import net.minecraft.src.Packet15Place;
  * @author historian
  * @since 1/8/2022
  */
-public class WorldDownloader implements ClientModInitializer {
+public class WorldDL implements ClientModInitializer {
 	public static final Minecraft mc = (Minecraft)FabricLoaderImpl.getInstance().getGameInstance();
 	private static boolean downloadingWorld;
 	private static Packet15Place openContainerPacket;
@@ -36,7 +36,7 @@ public class WorldDownloader implements ClientModInitializer {
 	}
 	
 	public static void setDownloadingWorld(final boolean downloadingWorld) {
-		WorldDownloader.downloadingWorld = downloadingWorld;
+		WorldDL.downloadingWorld = downloadingWorld;
 	}
 	
 	public static IChunkLoader getChunkLoader() {
@@ -44,7 +44,7 @@ public class WorldDownloader implements ClientModInitializer {
 	}
 	
 	public static void setChunkLoader(final IChunkLoader chunkLoader) {
-		WorldDownloader.chunkLoader = chunkLoader;
+		WorldDL.chunkLoader = chunkLoader;
 	}
 	
 	public static ISaveHandler getSaveHandler() {
@@ -52,7 +52,7 @@ public class WorldDownloader implements ClientModInitializer {
 	}
 	
 	public static void setSaveHandler(final ISaveHandler saveHandler) {
-		WorldDownloader.saveHandler = saveHandler;
+		WorldDL.saveHandler = saveHandler;
 	}
 
 	public static Packet15Place getOpenContainerPacket() {
@@ -60,7 +60,7 @@ public class WorldDownloader implements ClientModInitializer {
 	}
 
 	public static void setOpenContainerPacket(final Packet15Place placePacket) {
-		WorldDownloader.openContainerPacket = placePacket;
+		WorldDL.openContainerPacket = placePacket;
 	}
 
 	public static WorldClientMixinAccessor getWorldClientMixinAccessor() {

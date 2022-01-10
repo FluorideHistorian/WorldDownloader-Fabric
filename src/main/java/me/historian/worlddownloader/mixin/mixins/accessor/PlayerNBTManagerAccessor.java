@@ -16,6 +16,6 @@ import net.minecraft.src.PlayerNBTManager;
  */
 @Mixin(PlayerNBTManager.class)
 public interface PlayerNBTManagerAccessor {
-	@Invoker
+	@Invoker("getWorldDir")
 	File callGetWorldDir();
 }

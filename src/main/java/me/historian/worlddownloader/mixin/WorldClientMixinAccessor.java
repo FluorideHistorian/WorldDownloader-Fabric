@@ -14,6 +14,6 @@ import net.minecraft.src.TileEntity;
  */
 public interface WorldClientMixinAccessor {
 	void setNewBlockTileEntity(final int x, final int y, final int z, final TileEntity tileEntity);
-	TileEntity getBlockTileEntity(final int x, final int y, final int z);
+	
 	IInventory createNewChestInventory(final int x, final int y, final int z, final int size);
 }

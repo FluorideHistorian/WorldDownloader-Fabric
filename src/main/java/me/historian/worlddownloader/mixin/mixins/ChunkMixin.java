@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import me.historian.worlddownloader.WorldDownloader;
+import me.historian.worlddownloader.WorldDL;
 import me.historian.worlddownloader.mixin.ChunkMixinAccessor;
 import me.historian.worlddownloader.mixin.mixins.accessor.PlayerNBTManagerAccessor;
 import net.minecraft.src.Chunk;
@@ -45,7 +45,7 @@ public class ChunkMixin implements ChunkMixinAccessor {
 	
 	@Override
 	public void importOldChunkTileEntities() throws IOException {
-		File file = ((PlayerNBTManagerAccessor)WorldDownloader.getSaveHandler()).callGetWorldDir();
+		File file = ((PlayerNBTManagerAccessor)WorldDL.getSaveHandler()).callGetWorldDir();
 		if(((Chunk)((Object)this)).worldObj.worldProvider instanceof WorldProviderHell) {
 			file = new File(file, "DIM-1");
 			file.mkdirs();

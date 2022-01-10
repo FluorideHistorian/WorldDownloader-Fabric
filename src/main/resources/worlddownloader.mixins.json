@@ -13,8 +13,8 @@
     "ChunkProviderClientMixin",
     "GuiIngameMenuMixin",
     "NetworkManagerMixin",
-    "WorldClientMixin",
-    "NetClientHandlerMixin"
+    "NetClientHandlerMixin",
+    "WorldClientMixin"
   ],
   "injectors": {
     "maxShiftBy": 5,
