@@ -24,7 +24,7 @@ import net.minecraft.src.Packet15Place;
 public class NetworkManagerMixin {
 	@Inject(method = "addToSendQueue", at = @At("HEAD"))
 	private void addToSendQueue(final Packet packet, final CallbackInfo callbackInfo) {
-		if(WorldDL.isDownloadingWorld() && packet instanceof Packet15Place) {
+		if(WorldDL.isDownloadingWorld() && WorldDL.getSaveContainers() && packet instanceof Packet15Place) {
 			final Packet15Place packet0 = (Packet15Place)packet;
 			if(packet0.direction != 255 && (Block.blocksList[WorldDL.mc.theWorld.getBlockId(packet0.xPosition, packet0.yPosition, packet0.zPosition)] instanceof BlockContainer)) WorldDL.setOpenContainerPacket(packet0);
 		}

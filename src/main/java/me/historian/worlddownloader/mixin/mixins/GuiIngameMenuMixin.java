@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import me.historian.worlddownloader.GuiWorldDL;
 import me.historian.worlddownloader.WorldDL;
 import me.historian.worlddownloader.mixin.ChunkProviderClientMixinAccessor;
 import me.historian.worlddownloader.mixin.mixins.accessor.NetClientHandlerAccessor;
@@ -39,7 +40,8 @@ public class GuiIngameMenuMixin extends GuiScreen {
 	@Inject(method = "initGui", at = @At(value = "INVOKE", target = "Ljava/util/List;get(I)Ljava/lang/Object;", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
 	private void initGui(final CallbackInfo callbackInfo) {
 		((GuiButton)controlList.get(0)).yPosition = height / 4 + 144 - 16;
-		controlList.add(button = new GuiButton(69, width / 2 - 100, height / 4 + 120 - 16, WorldDL.isDownloadingWorld() ? "Stop downloading this world" : "Download this world"));
+		controlList.add(button = new GuiButton(69, width / 2 - 100, height / 4 + 120 - 16, 180, 20, WorldDL.isDownloadingWorld() ? "Stop downloading this world" : "Download this world"));
+		controlList.add(new GuiButton(70, width / 2 + 80, height / 4 + 120 - 16, 20, 20, "..."));
 	}
 	
 	@Inject(method = "drawScreen", at = @At("TAIL"))
@@ -67,13 +69,15 @@ public class GuiIngameMenuMixin extends GuiScreen {
 				startDownload();
 				mc.displayGuiScreen(null);
 			}
+		} else if(button.id == 70) {
+			mc.displayGuiScreen(new GuiWorldDL());
 		}
 	}
 	
 	private void startDownload() {
 		String worldName = mc.gameSettings.lastServer;
 		if(worldName.isEmpty()) worldName = "Downloaded World";
-		worldName += " " + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").format(LocalDateTime.now());
+		if(!WorldDL.getAllowMerging()) worldName += " " + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").format(LocalDateTime.now());
 		final WorldClient worldClient = ((NetClientHandlerAccessor)mc.method_2145()).getWorldClient();
 		((WorldAccessor)worldClient).getWorldInfo().setWorldName(worldName);
 		WorldDL.setSaveHandler(mc.method_2127().method_1009(worldName, false));
@@ -81,8 +85,7 @@ public class GuiIngameMenuMixin extends GuiScreen {
 		((WorldAccessor)worldClient).getWorldInfo().setSizeOnDisk(getFileSizeRecursive(((PlayerNBTManagerAccessor)WorldDL.getSaveHandler()).callGetWorldDir()));
 		((ChunkProviderClientMixinAccessor)((WorldAccessor)worldClient).getChunkProvider()).importOldTileEntities();
 		WorldDL.setDownloadingWorld(true);
-		mc.ingameGUI.addChatMessage("\247c[WorldDL] \247cDownloading everything you can see...");
-		mc.ingameGUI.addChatMessage("\247c[WorldDL] \2476You can increase that area by travelling around.");
+		mc.ingameGUI.addChatMessage("\247c[WorldDL] \2476Download started.");
 	}
 	
 	private void stopDownload() {
@@ -90,7 +93,7 @@ public class GuiIngameMenuMixin extends GuiScreen {
 		WorldDL.setDownloadingWorld(false);
 		WorldDL.setChunkLoader(null);
 		WorldDL.setSaveHandler(null);
-		mc.ingameGUI.addChatMessage("\247c[WorldDL] \247cDownload stopped.");
+		mc.ingameGUI.addChatMessage("\247c[WorldDL] \2476Download stopped.");
 	}
 	
 	private static long getFileSizeRecursive(final File file) {

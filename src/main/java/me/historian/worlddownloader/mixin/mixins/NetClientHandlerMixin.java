@@ -27,6 +27,7 @@ public class NetClientHandlerMixin {
 	private IInventory modifyDisplayGUIChestInventory(final IInventory oldInventory) {
 		final Packet15Place packet;
 		if(WorldDL.isDownloadingWorld() && (packet = WorldDL.getOpenContainerPacket()) != null) {
+			WorldDL.setOpenContainerPacket(null);
 			return WorldDL.getWorldClientMixinAccessor().createNewChestInventory(packet.xPosition, packet.yPosition, packet.zPosition, oldInventory.getSizeInventory());
 		}
 		return oldInventory;
@@ -38,6 +39,7 @@ public class NetClientHandlerMixin {
 		if(WorldDL.isDownloadingWorld() && (packet = WorldDL.getOpenContainerPacket()) != null) {
 			final TileEntityFurnace tileEntityFurnace = new TileEntityFurnace();
 			WorldDL.getWorldClientMixinAccessor().setNewBlockTileEntity(packet.xPosition, packet.yPosition, packet.zPosition, tileEntityFurnace);
+			WorldDL.setOpenContainerPacket(null);
 			return tileEntityFurnace;
 		}
 		return oldTileEntityFurnace;
@@ -49,6 +51,7 @@ public class NetClientHandlerMixin {
 		if(WorldDL.isDownloadingWorld() && (packet = WorldDL.getOpenContainerPacket()) != null) {
 			final TileEntityDispenser tileEntityDispenser = new TileEntityDispenser();
 			WorldDL.getWorldClientMixinAccessor().setNewBlockTileEntity(packet.xPosition, packet.yPosition, packet.zPosition, tileEntityDispenser);
+			WorldDL.setOpenContainerPacket(null);
 			return tileEntityDispenser;
 		}
 		return oldTileEntityDispenser;

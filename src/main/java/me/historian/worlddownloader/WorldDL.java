@@ -20,7 +20,7 @@ import net.minecraft.src.Packet15Place;
  */
 public class WorldDL implements ClientModInitializer {
 	public static final Minecraft mc = (Minecraft)FabricLoaderImpl.getInstance().getGameInstance();
-	private static boolean downloadingWorld;
+	private static boolean downloadingWorld, allowMerging, saveContainers = true;
 	private static Packet15Place openContainerPacket;
 	private static IChunkLoader chunkLoader;
 	private static ISaveHandler saveHandler;
@@ -54,16 +54,32 @@ public class WorldDL implements ClientModInitializer {
 	public static void setSaveHandler(final ISaveHandler saveHandler) {
 		WorldDL.saveHandler = saveHandler;
 	}
-
+	
 	public static Packet15Place getOpenContainerPacket() {
 		return openContainerPacket;
 	}
-
+	
 	public static void setOpenContainerPacket(final Packet15Place placePacket) {
 		WorldDL.openContainerPacket = placePacket;
 	}
-
+	
 	public static WorldClientMixinAccessor getWorldClientMixinAccessor() {
-		return ((WorldClientMixinAccessor)((NetClientHandlerAccessor)mc.method_2145()).getWorldClient());
+		return (WorldClientMixinAccessor)((NetClientHandlerAccessor)mc.method_2145()).getWorldClient();
+	}
+	
+	public static boolean getAllowMerging() {
+		return allowMerging;
+	}
+	
+	public static void setAllowMerging(final boolean allowMerging) {
+		WorldDL.allowMerging = allowMerging;
+	}
+	
+	public static boolean getSaveContainers() {
+		return saveContainers;
+	}
+	
+	public static void setSaveContainers(final boolean saveContainers) {
+		WorldDL.saveContainers = saveContainers;
 	}
 }
