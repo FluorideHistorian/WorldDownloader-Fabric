@@ -13,27 +13,33 @@ import net.minecraft.src.GuiScreen;
  * @since 1/10/2022
  */
 public class GuiWorldDL extends GuiScreen {
+	private GuiButton allowMerging, saveContainers;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		controlList.clear();
-		controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 24 - 16, "Allow merging: " + WorldDL.getAllowMerging()));
-		controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 24 - 16 + 24, "Save containers: " + WorldDL.getSaveContainers()));
+		controlList.add(allowMerging = new GuiButton(0, width / 2 - 100, height / 4 + 24 - 16, ""));
+		controlList.add(saveContainers = new GuiButton(1, width / 2 - 100, height / 4 + 24 - 16 + 24, ""));
+		updateSettingsText();
+	}
+
+	private void updateSettingsText() {
+		allowMerging.displayString = "Allow merging: " + WorldDL.getAllowMerging();
+		saveContainers.displayString = "Save containers: " + WorldDL.getSaveContainers();
 	}
 	
 	@Override
 	protected void actionPerformed(final GuiButton button) {
 		switch(button.id) {
-			case 0: {
+			case 0:
 				WorldDL.setAllowMerging(!WorldDL.getAllowMerging());
-				button.displayString = "Allow merging: " + WorldDL.getAllowMerging();
+				updateSettingsText();
 				break;
-			}
-			case 1: {
+			case 1:
 				WorldDL.setSaveContainers(!WorldDL.getSaveContainers());
-				button.displayString = "Save containers: " + WorldDL.getSaveContainers();
+				updateSettingsText();
 				break;
-			}
 			default:break;
 		}
 	}

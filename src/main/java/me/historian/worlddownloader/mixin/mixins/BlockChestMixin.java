@@ -26,7 +26,7 @@ public abstract class BlockChestMixin extends BlockContainer {
 		super(id, material);
 	}
 	
-	@Inject(method = "onBlockRemoval", at = @At(value = "INVOKE", target = "Lnet/minecraft/src/World;method_1777(III)Lnet/minecraft/src/TileEntity;", shift = At.Shift.BY, by = 3), locals = LocalCapture.CAPTURE_FAILHARD)
+	@Inject(method = "onBlockRemoval", at = @At(value = "INVOKE", target = "Lnet/minecraft/src/World;method_1777(III)Lnet/minecraft/src/TileEntity;", shift = At.Shift.BY, by = 3), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
 	private void onBlockRemoval(final World world, final int x, final int y, final int z, CallbackInfo callbackInfo, final TileEntityChest tileEntityChest) {
 		if(tileEntityChest == null) {
 			callbackInfo.cancel();

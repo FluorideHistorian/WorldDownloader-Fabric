@@ -5,25 +5,17 @@
  */
 package me.historian.worlddownloader.mixin.mixins;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import me.historian.worlddownloader.GuiWorldDL;
+import me.historian.worlddownloader.WorldDL;
+import net.minecraft.src.GuiButton;
+import net.minecraft.src.GuiIngameMenu;
+import net.minecraft.src.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import me.historian.worlddownloader.GuiWorldDL;
-import me.historian.worlddownloader.WorldDL;
-import me.historian.worlddownloader.mixin.ChunkProviderClientMixinAccessor;
-import me.historian.worlddownloader.mixin.mixins.accessor.NetClientHandlerAccessor;
-import me.historian.worlddownloader.mixin.mixins.accessor.PlayerNBTManagerAccessor;
-import me.historian.worlddownloader.mixin.mixins.accessor.WorldAccessor;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiIngameMenu;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.WorldClient;
 
 /**
  * @author historian
@@ -73,35 +65,14 @@ public class GuiIngameMenuMixin extends GuiScreen {
 			mc.displayGuiScreen(new GuiWorldDL());
 		}
 	}
-	
+
 	private void startDownload() {
-		String worldName = mc.gameSettings.lastServer;
-		if(worldName.isEmpty()) worldName = "Downloaded World";
-		if(!WorldDL.getAllowMerging()) worldName += " " + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").format(LocalDateTime.now());
-		final WorldClient worldClient = ((NetClientHandlerAccessor)mc.method_2145()).getWorldClient();
-		((WorldAccessor)worldClient).getWorldInfo().setWorldName(worldName);
-		WorldDL.setSaveHandler(mc.method_2127().method_1009(worldName, false));
-		WorldDL.setChunkLoader(WorldDL.getSaveHandler().method_1734(worldClient.worldProvider));
-		((WorldAccessor)worldClient).getWorldInfo().setSizeOnDisk(getFileSizeRecursive(((PlayerNBTManagerAccessor)WorldDL.getSaveHandler()).callGetWorldDir()));
-		((ChunkProviderClientMixinAccessor)((WorldAccessor)worldClient).getChunkProvider()).importOldTileEntities();
-		WorldDL.setDownloadingWorld(true);
+		WorldDL.startWorldDownload();
 		mc.ingameGUI.addChatMessage("\247c[WorldDL] \2476Download started.");
 	}
-	
+
 	private void stopDownload() {
-		((NetClientHandlerAccessor)mc.method_2145()).getWorldClient().saveWorld(true, null);
-		WorldDL.setDownloadingWorld(false);
-		WorldDL.setChunkLoader(null);
-		WorldDL.setSaveHandler(null);
+		WorldDL.stopWorldDownload();
 		mc.ingameGUI.addChatMessage("\247c[WorldDL] \2476Download stopped.");
-	}
-	
-	private static long getFileSizeRecursive(final File file) {
-		long size = 0;
-		for(final File file0 : file.listFiles()) {
-			if(file0.isDirectory()) size += getFileSizeRecursive(file0);
-			else if(file0.isFile()) size += file0.length();
-		}
-		return size;
 	}
 }

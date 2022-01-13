@@ -4,17 +4,18 @@
   "package": "me.historian.worlddownloader.mixin.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "accessor.BlockContainerAccessor",
-    "accessor.NetClientHandlerAccessor",
-    "accessor.PlayerNBTManagerAccessor",
-    "accessor.WorldAccessor",
     "BlockChestMixin",
     "ChunkMixin",
     "ChunkProviderClientMixin",
     "GuiIngameMenuMixin",
-    "NetworkManagerMixin",
+    "MinecraftMixin",
     "NetClientHandlerMixin",
-    "WorldClientMixin"
+    "NetworkManagerMixin",
+    "WorldClientMixin",
+    "accessor.BlockContainerAccessor",
+    "accessor.NetClientHandlerAccessor",
+    "accessor.PlayerNBTManagerAccessor",
+    "accessor.WorldAccessor"
   ],
   "injectors": {
     "maxShiftBy": 5,

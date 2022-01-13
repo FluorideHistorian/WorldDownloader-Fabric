@@ -18,7 +18,7 @@ import net.minecraft.src.TileEntityFurnace;
 /**
  * @author ChadGamer82342
  * @since 1/9/2022
- * 
+ *
  * TODO this isn't the greatest solution for mod compatibility
  */
 @Mixin(NetClientHandler.class)

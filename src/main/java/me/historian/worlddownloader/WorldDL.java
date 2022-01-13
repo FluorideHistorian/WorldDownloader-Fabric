@@ -5,14 +5,19 @@
  */
 package me.historian.worlddownloader;
 
+import me.historian.worlddownloader.mixin.ChunkProviderClientMixinAccessor;
 import me.historian.worlddownloader.mixin.WorldClientMixinAccessor;
 import me.historian.worlddownloader.mixin.mixins.accessor.NetClientHandlerAccessor;
+import me.historian.worlddownloader.mixin.mixins.accessor.PlayerNBTManagerAccessor;
+import me.historian.worlddownloader.mixin.mixins.accessor.WorldAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.FabricLoaderImpl;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.IChunkLoader;
-import net.minecraft.src.ISaveHandler;
-import net.minecraft.src.Packet15Place;
+import net.minecraft.src.*;
+
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author historian
@@ -24,11 +29,39 @@ public class WorldDL implements ClientModInitializer {
 	private static Packet15Place openContainerPacket;
 	private static IChunkLoader chunkLoader;
 	private static ISaveHandler saveHandler;
+	private static WorldClient worldClient;
 	
 	@Override
 	public void onInitializeClient() {
 		System.out.println("Starting");
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("Stopping")));
+	}
+
+	public static void startWorldDownload() {
+		String worldName = mc.gameSettings.lastServer;
+		if(worldName.isEmpty()) worldName = "Downloaded World";
+		if(!WorldDL.getAllowMerging()) worldName += " " + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").format(LocalDateTime.now());
+		worldClient = ((NetClientHandlerAccessor)mc.method_2145()).getWorldClient();
+		((WorldAccessor)worldClient).getWorldInfo().setWorldName(worldName);
+		WorldDL.setSaveHandler(mc.method_2127().method_1009(worldName, false));
+		WorldDL.setChunkLoader(WorldDL.getSaveHandler().method_1734(worldClient.worldProvider));
+		((WorldAccessor)worldClient).getWorldInfo().setSizeOnDisk(getFileSizeRecursive(((PlayerNBTManagerAccessor)WorldDL.getSaveHandler()).callGetWorldDir()));
+		((ChunkProviderClientMixinAccessor)((WorldAccessor)worldClient).getChunkProvider()).importOldTileEntities();
+		WorldDL.setDownloadingWorld(true);
+	}
+
+	public static void changeWorlds() {
+
+	}
+
+	public static void stopWorldDownload() {
+		if(worldClient == null) return;
+		worldClient.saveWorld(true, null);
+		worldClient = null;
+		WorldDL.setDownloadingWorld(false);
+		WorldDL.setChunkLoader(null);
+		WorldDL.setSaveHandler(null);
+
 	}
 	
 	public static boolean isDownloadingWorld() {
@@ -81,5 +114,14 @@ public class WorldDL implements ClientModInitializer {
 	
 	public static void setSaveContainers(final boolean saveContainers) {
 		WorldDL.saveContainers = saveContainers;
+	}
+
+	private static long getFileSizeRecursive(final File file) {
+		long size = 0;
+		for(final File file0 : file.listFiles()) {
+			if(file0.isDirectory()) size += getFileSizeRecursive(file0);
+			else if(file0.isFile()) size += file0.length();
+		}
+		return size;
 	}
 }
