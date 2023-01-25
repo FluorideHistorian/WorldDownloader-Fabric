@@ -11,9 +11,11 @@ import me.historian.worlddownloader.mixin.mixins.accessor.NetClientHandlerAccess
 import me.historian.worlddownloader.mixin.mixins.accessor.PlayerNBTManagerAccessor;
 import me.historian.worlddownloader.mixin.mixins.accessor.WorldAccessor;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.loader.FabricLoaderImpl;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
+import net.minecraft.src.IChunkLoader;
+import net.minecraft.src.ISaveHandler;
+import net.minecraft.src.Packet15Place;
+import net.minecraft.src.WorldClient;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -24,7 +26,7 @@ import java.time.format.DateTimeFormatter;
  * @since 1/8/2022
  */
 public class WorldDL implements ClientModInitializer {
-	public static final Minecraft mc = (Minecraft)FabricLoaderImpl.getInstance().getGameInstance();
+	public static Minecraft mc;
 	private static boolean downloadingWorld, allowMerging, saveContainers = true;
 	private static Packet15Place openContainerPacket;
 	private static IChunkLoader chunkLoader;

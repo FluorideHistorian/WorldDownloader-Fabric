@@ -22,6 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftMixin {
     @Shadow public World theWorld;
 
+    @Inject(method = "startGame", at = @At("HEAD"))
+    public void onStartGame(CallbackInfo ci) {
+        WorldDL.mc = (Minecraft) (Object) this; // Changed to this for support of different fabric-loader implementations
+    }
     @Inject(method = "changeWorld1", at = @At("TAIL"))
     public void onChangeWorld(World newWorld, CallbackInfo ci) {
         if(this.theWorld != null && newWorld != null && WorldDL.isDownloadingWorld()) {
