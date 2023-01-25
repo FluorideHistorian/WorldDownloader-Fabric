@@ -5,15 +5,11 @@
  */
 package me.historian.worlddownloader.mixin.mixins;
 
+import me.historian.worlddownloader.WorldDL;
+import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import me.historian.worlddownloader.WorldDL;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.NetClientHandler;
-import net.minecraft.src.Packet15Place;
-import net.minecraft.src.TileEntityDispenser;
-import net.minecraft.src.TileEntityFurnace;
 
 /**
  * @author ChadGamer82342
@@ -56,5 +52,4 @@ public class NetClientHandlerMixin {
 		}
 		return oldTileEntityDispenser;
 	}
-	
 }

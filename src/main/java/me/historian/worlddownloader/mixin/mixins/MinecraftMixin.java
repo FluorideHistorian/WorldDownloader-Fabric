@@ -29,7 +29,7 @@ public class MinecraftMixin {
     @Inject(method = "changeWorld1", at = @At("TAIL"))
     public void onChangeWorld(World newWorld, CallbackInfo ci) {
         if(this.theWorld != null && newWorld != null && WorldDL.isDownloadingWorld()) {
-            WorldDL.changeWorlds();
+            WorldDL.postChangeWorlds();
         } else if(this.theWorld != null && newWorld == null && WorldDL.isDownloadingWorld()) {
             // Setting world to null probably getting disconnected from the server.
             WorldDL.stopWorldDownload();

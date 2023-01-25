@@ -32,6 +32,7 @@ public class WorldDL implements ClientModInitializer {
 	private static IChunkLoader chunkLoader;
 	private static ISaveHandler saveHandler;
 	private static WorldClient worldClient;
+	private static String lastWorldName;
 	
 	@Override
 	public void onInitializeClient() {
@@ -40,20 +41,31 @@ public class WorldDL implements ClientModInitializer {
 	}
 
 	public static void startWorldDownload() {
-		String worldName = mc.gameSettings.lastServer;
-		if(worldName.isEmpty()) worldName = "Downloaded World";
-		if(!WorldDL.getAllowMerging()) worldName += " " + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").format(LocalDateTime.now());
 		worldClient = ((NetClientHandlerAccessor)mc.method_2145()).getWorldClient();
-		((WorldAccessor)worldClient).getWorldInfo().setWorldName(worldName);
-		WorldDL.setSaveHandler(mc.method_2127().method_1009(worldName, false));
+
+		// Setup the world name
+		lastWorldName = mc.gameSettings.lastServer;
+		if(lastWorldName.isEmpty()) lastWorldName = "Downloaded World";
+		if(!WorldDL.getAllowMerging()) lastWorldName += " " + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").format(LocalDateTime.now());
+		((WorldAccessor)worldClient).getWorldInfo().setWorldName(lastWorldName);
+		WorldDL.setSaveHandler(mc.method_2127().method_1009(lastWorldName, false));
+
 		WorldDL.setChunkLoader(WorldDL.getSaveHandler().method_1734(worldClient.worldProvider));
 		((WorldAccessor)worldClient).getWorldInfo().setSizeOnDisk(getFileSizeRecursive(((PlayerNBTManagerAccessor)WorldDL.getSaveHandler()).callGetWorldDir()));
 		((ChunkProviderClientMixinAccessor)((WorldAccessor)worldClient).getChunkProvider()).importOldTileEntities();
 		WorldDL.setDownloadingWorld(true);
 	}
 
-	public static void changeWorlds() {
+	public static void postChangeWorlds() {
+		// When we change worlds it creates a new world client instance, so we have to set up a save handler for that
+		worldClient = ((NetClientHandlerAccessor)mc.method_2145()).getWorldClient();
 
+		((WorldAccessor)worldClient).getWorldInfo().setWorldName(lastWorldName);
+		WorldDL.setSaveHandler(mc.method_2127().method_1009(lastWorldName, false));
+
+		WorldDL.setChunkLoader(WorldDL.getSaveHandler().method_1734(worldClient.worldProvider));
+		((WorldAccessor)worldClient).getWorldInfo().setSizeOnDisk(getFileSizeRecursive(((PlayerNBTManagerAccessor)WorldDL.getSaveHandler()).callGetWorldDir()));
+		((ChunkProviderClientMixinAccessor)((WorldAccessor)worldClient).getChunkProvider()).importOldTileEntities();
 	}
 
 	public static void stopWorldDownload() {
@@ -119,8 +131,11 @@ public class WorldDL implements ClientModInitializer {
 	}
 
 	private static long getFileSizeRecursive(final File file) {
+		if(file == null) return 0L;
 		long size = 0;
-		for(final File file0 : file.listFiles()) {
+		File[] fileList = file.listFiles();
+		if(fileList == null) return 0L;
+		for(final File file0 : fileList) {
 			if(file0.isDirectory()) size += getFileSizeRecursive(file0);
 			else if(file0.isFile()) size += file0.length();
 		}
